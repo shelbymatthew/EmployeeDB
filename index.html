@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Employee Database</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+        crossorigin="anonymous">
+    <script src="https://www.gstatic.com/firebasejs/4.11.0/firebase.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/momentjs/2.12.0/moment.min.js"></script>
+    <script>
+        // Initialize Firebase
+        var config = {
+            apiKey: "AIzaSyBF87PA3tx1P_XCo5wGJWy2ULpzYHkwZkg",
+            authDomain: "employee-database-c372e.firebaseapp.com",
+            databaseURL: "https://employee-database-c372e.firebaseio.com",
+            projectId: "employee-database-c372e",
+            storageBucket: "employee-database-c372e.appspot.com",
+            messagingSenderId: "817810112187"
+        };
+        firebase.initializeApp(config);
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="jumbotron jumbotron-fluid">
+            <div class="container">
+                <h1 class="display-4">Employee Database</h1>
+                <p class="lead">A comprehensive Directory of Employee Billable Hours</p>
+            </div>
+        </div>
+
+        <table style="width:100%" id="mainTable">
+            <tr>
+                <th>Name</th>
+                <th>Role</th>
+                <th>Start Date</th>
+                <th>Months Worked</th>
+                <th>Monthly Rate ($)</th>
+                <th>Total Billed ($)</th>
+
+            </tr>
+            <tr>
+                <td id="tableName"></td>
+                <td id="tableRole"></td>
+                <td id="tableDate"></td>
+                <td id="tableMonths"></td>
+                <td id="tableRate"></td>
+                <td id="tableBilled"></td>
+            </tr>
+        </table>
+        <div class="card">
+            <div class="card-header">
+                Add Employee
+            </div>
+            <div class="card-body">
+
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="inputGroup-sizing-default">Employee Name</span>
+                    </div>
+                    <input type="text" class="form-control" id="name-input" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="inputGroup-sizing-default">Role</span>
+                    </div>
+                    <input type="text" class="form-control" id="role-input" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="inputGroup-sizing-default">Start Date (DD/MM/YY -ex 01/10/99)</span>
+                    </div>
+                    <input type="text" class="form-control" id="date-input" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="inputGroup-sizing-default">Monthly Rate</span>
+                    </div>
+                    <input type="text" class="form-control" id="rate-input" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+                </div>
+
+                <a href="#" class="btn btn-primary">Submit</a>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+
+
+
+    <script>
+        var database = firebase.database();
+        var name = "";
+        var role = "";
+        var date = "";
+        var rate = "";
+        
+        var randomFormat = "MM/DD/YYYY";
+
+
+        $(".btn-primary").on("click", function () {
+            event.preventDefault();
+            name = $("#name-input").val().trim();
+            role = $("#role-input").val().trim();
+            date = $("#date-input").val().trim();
+            rate = $("#rate-input").val().trim();
+            
+            database.ref().push({
+                name: name,
+                role: role,
+                dateAdded: firebase.database.ServerValue.TIMESTAMP,
+                date: date,
+                rate: rate,
+                
+            });
+
+            // var convertedDate = moment(date, randomFormat);
+            // console.log("con" + convertedDate)
+            // console.log(moment(convertedDate).toNow());
+            // console.log(moment(convertedDate).diff(moment(), "years"));
+            // console.log(moment(convertedDate).diff(moment(), "months"));
+
+
+        });
+        database.ref().on("child_added", function (childSnapshot) {
+
+            // Log everything that's coming out of snapshot
+            console.log(childSnapshot.val().name);
+            console.log(childSnapshot.val().role);
+            console.log(childSnapshot.val().dateAdded);
+            console.log(childSnapshot.val().date);
+            console.log(childSnapshot.val().rate);
+
+
+            // full list of items to the well
+            $("#mainTable").append("<tr><td> " + childSnapshot.val().name).append("</td>" + childSnapshot.val().role).append("</td><td> " + childSnapshot.val().date).append("months").append(" </td><td> " + childSnapshot.val().rate).append("</td><td>" + "math" + "</td></tr>")
+            // .append(moment(convertedDate).diff(moment(), "months"))
+            
+            
+            .append("math");
+            // + "</tr>";
+
+            //   " </span><span class='member-age'> " + childSnapshot.val().date +
+            //   " </span><span class='member-comment'> " + childSnapshot.val().rate + " </span></div>");
+
+            // Handle the errors
+        }, function (errorObject) {
+            console.log("Errors handled: " + errorObject.code);
+        });
+
+        database.ref().orderByChild("dateAdded").limitToLast(1).on("child_added", function (snapshot) {
+
+            // Change the HTML to reflect
+            $("#name-display").text(snapshot.val().name);
+            $("#role-display").text(snapshot.val().role);
+            $("#date-display").text(snapshot.val().date);
+            $("#rate-display").text(snapshot.val().rate);
+        });
+
+//         database.ref().on("value", function(snapshot) {
+
+// // Print the initial data to the console.
+// console.log(snapshot.val());
+
+// // Log the value of the various properties
+// console.log(snapshot.val().name);
+// console.log(snapshot.val().role);
+// console.log(snapshot.val().date);
+// });
+    </script>
+</body>
+
+</html>
